@@ -22,7 +22,6 @@ const Login = () => {
         const currentUser = {
           email: user.email
         }
-        console.log(currentUser);
 
         // get jwt token
         fetch('http://localhost:5000/jwt', {
@@ -34,11 +33,11 @@ const Login = () => {
         })
           .then(res => res.json())
           .then(data => {
-            console.log(data);
-            // local storage is easiest but  not the best place to store jwt token
+            // local storage is easiest but  not the best place to store jwt token 
             localStorage.setItem('geniusToken', data.token);
+            navigate(from, { replace: true })
           })
-        navigate(from, { replace: true })
+
       })
       .catch(e => console.log(e))
   }

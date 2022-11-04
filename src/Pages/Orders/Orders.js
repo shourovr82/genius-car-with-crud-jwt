@@ -3,16 +3,28 @@ import { AuthContext } from '../../contexts/AuthProvider/AuthProvider';
 import OrderRow from './OrderRow';
 
 const Orders = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
 
 
   useEffect(() => {
-    fetch(`http://localhost:5000/orders?email=${user?.email}`)
-      .then(res => res.json())
-      .then(data => setOrders(data))
+    fetch(`http://localhost:5000/orders?email=${user?.email}`, {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('geniusToken')}`
+      }
+    })
+      .then(res => {
+        if (res.status === 401 || res.status === 403) {
+          return logOut();
+        }
+        return res.json()
+      })
+      .then(data => {
+        console.log('received', data);
+        setOrders(data)
+      })
       .catch(e => console.log(e))
-  }, [user?.email])
+  }, [user?.email, logOut])
 
 
 
@@ -20,11 +32,13 @@ const Orders = () => {
     const proceed = window.confirm('Are your sure to cancel this order?')
     if (proceed) {
       fetch(`http://localhost:5000/orders/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('geniusToken')}`
+        }
       })
         .then(res => res.json())
         .then(data => {
-          console.log(data);
           if (data.deletedCount > 0) {
             alert('Deleted Successfully');
             const remaining = orders.filter(odr => odr._id !== id);
@@ -38,7 +52,8 @@ const Orders = () => {
     fetch(`http://localhost:5000/orders/${id}`, {
       method: 'PATCH',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        authorization: `Bearer ${localStorage.getItem('geniusToken')}`
       },
       body: JSON.stringify({ status: 'Approved' })
     })
