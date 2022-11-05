@@ -26,7 +26,7 @@ const CheckOut = () => {
     //   alert('Phone Number should be 10 charecters or longer')
     // }
 
-    fetch('http://localhost:5000/orders', {
+    fetch('https://genius-car-server-murex.vercel.app/orders', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
